@@ -1,12 +1,10 @@
 import * as turf from '@turf/turf'
+import {findCompletedJobs, findPendingJobs} from "./jobs.js";
 
-const findScheduledJobs = (listOfJobs) => {
-    return listOfJobs.filter(job => job.status === "SCHEDULED")
-}
 const getProviderRatings = (jobs, providers) => {
     const completedJobs = jobs.filter(job => job.status === "COMPLETE")
     let avg_rating;
-    //TODO handle mutation of providers
+
     for (const provider of providers) {
         provider["jobs"] = []
     }
@@ -14,7 +12,7 @@ const getProviderRatings = (jobs, providers) => {
     for (const job of completedJobs) {
         providers.map(provider => {
             if (provider.id === job.provider_id) {
-                provider.jobs = [...provider.jobs, {jid: job.id, rating: job.provider_rating}]
+                provider['jobs'] = [...provider.jobs, {jid: job.id, rating: job.provider_rating}]
             }
         })
     }
@@ -22,28 +20,25 @@ const getProviderRatings = (jobs, providers) => {
     for (const provider of providers) {
         let numberOfJobs = provider.jobs.length
         let rating_sum = provider.jobs.reduce((rating, job) => {
-            if (job.rating === '') {
+            if (job.rating === '' || null) {
                 numberOfJobs--
-                // console.log(numberOfJobs, "id ", provider.id)
                 return 0
             }
             return rating + parseInt(job.rating)
-
         }, 0)
         if (rating_sum && numberOfJobs === 0) avg_rating = 0
         avg_rating = rating_sum / numberOfJobs
-        //TODO fix NaN
         provider['avg_rating'] = avg_rating;
     }
 }
 
 const calculateAveragePageCost = (jobs, providerId) => {
-//TODO figure out why tf there are dupes
-    const getJobsByLocationAndProviderId = (locationType, providerId) => (jobs.filter(job => {
-        if ((job.provider_id === providerId) && (job.location_type === locationType && job.status === "COMPLETE")) {
+    const completedJobs = findCompletedJobs(jobs)
+    const getJobsByLocationAndProviderId = (locationType, providerId) => completedJobs.filter(job => {
+        if ((job.provider_id === providerId) && (job.location_type === locationType)) {
             return job
         }
-    }))
+    })
 
     const remoteJobs = getJobsByLocationAndProviderId("REMOTE", providerId)
     const onLocationJobs = getJobsByLocationAndProviderId("LOCATION_BASED", providerId)
@@ -86,4 +81,32 @@ const findDistance = (scheduledJobs, providers) => {
     })
 }
 
-export {findScheduledJobs, getProviderRatings, calculateAveragePageCost, findDistance}
+const calculateTurnInTime = (jobs, providers) => {
+
+    const completedJobs = findCompletedJobs(jobs)
+    const materialTurnInWaitTimes = completedJobs.map(({materials_turned_in_at, provider_id, datetime}) => {
+        const formatted_materials_date = new Date(materials_turned_in_at);
+        const formatted_datetime = new Date(datetime)
+        const timeDifference =
+            formatted_materials_date.getTime() - formatted_datetime.getTime();
+
+        const dayDifference =
+            Math.round
+            (timeDifference / (1000 * 3600 * 24));
+        return {avg_days_to_turn_in: dayDifference, provider_id}
+
+    })
+
+    const outstandingMaterials = findPendingJobs(jobs)
+
+    return providers.map(provider => {
+        const sumOfWaitTimesById = materialTurnInWaitTimes.filter(({provider_id}) => provider_id === provider.id)
+        const awaitingMaterialsByProvider = outstandingMaterials.filter(({provider_id}) => provider_id === provider.id).length
+        const totalDays = Math.round(sumOfWaitTimesById.reduce((tally, curr) => {
+            if (curr['provider_id']) return tally + curr['avg_days_to_turn_in']
+        }, 0) / sumOfWaitTimesById.length) + awaitingMaterialsByProvider
+        return {provider_id: provider.id, avg_days_to_turn_in: totalDays ? totalDays : null}
+    })
+}
+
+export {getProviderRatings, calculateAveragePageCost, findDistance, calculateTurnInTime}
