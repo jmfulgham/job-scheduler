@@ -1,5 +1,5 @@
 import * as turf from '@turf/turf'
-import {findCompletedJobs, findPendingJobs} from "./jobs.js";
+import {findCompletedJobs, findPendingJobs, ON_LOCATION_JOB_TYPE, REMOTE_JOB_TYPE} from "./jobs.js";
 
 const getProviderRatings = (jobs, providers) => {
     const completedJobs = jobs.filter(job => job.status === "COMPLETE")
@@ -30,6 +30,7 @@ const getProviderRatings = (jobs, providers) => {
         avg_rating = rating_sum / numberOfJobs
         provider['avg_rating'] = avg_rating;
     }
+    return providers
 }
 
 const calculateAveragePageCost = (jobs, providerId) => {
@@ -40,49 +41,35 @@ const calculateAveragePageCost = (jobs, providerId) => {
         }
     })
 
-    const remoteJobs = getJobsByLocationAndProviderId("REMOTE", providerId)
-    const onLocationJobs = getJobsByLocationAndProviderId("LOCATION_BASED", providerId)
+    const remoteJobs = getJobsByLocationAndProviderId(REMOTE_JOB_TYPE, providerId)
+    const onLocationJobs = getJobsByLocationAndProviderId(ON_LOCATION_JOB_TYPE, providerId)
     const averageCost = (jobs) => (jobs.reduce((prev, current) => {
         if (current['avg_cost_per_page']) return prev + Number(current['avg_cost_per_page'])
     }, 0) / jobs.length)
 
-    const averageRemoteJobCost = averageCost(remoteJobs);
-    const averageOnLocationJobCost = averageCost(onLocationJobs)
-    return {averageRemoteJobCost, averageOnLocationJobCost, provider_id: providerId}
+    const avg_remote_cost_p_page = averageCost(remoteJobs);
+    const avg_location_cost_p_page = averageCost(onLocationJobs)
+    return {avg_remote_cost_p_page, avg_location_cost_p_page, provider_id: providerId}
 }
-
-const findDistance = (scheduledJobs, providers) => {
-//TODO spot check distance
-    const filteredLocationJobs = scheduledJobs.filter(job => job.location_type === "LOCATION_BASED")
-    const scheduledCoords = filteredLocationJobs.map(job => ({
-        job_id: job.id,
-        coords: turf.point([job.longitude, job.latitude])
-    }))
-
+const findDistance = (scheduledJob, providers) => {
+    if(scheduledJob.location_type === REMOTE_JOB_TYPE) return {distance_in_miles: 0}
+    const jobCoords = scheduledJob.latitude && turf.point([scheduledJob.longitude, scheduledJob.latitude])
     const providerCoords = providers.map(provider => ({
         provider_id: provider.id,
         coords: turf.point([provider.longitude, provider.latitude])
     }))
 
     const options = {units: 'miles'}
-
     return providerCoords.map((provider) => {
-        let jobs = []
         const placeholder = {}
-        for (const jobLocation of scheduledCoords) {
-            placeholder['provider_id'] = provider.provider_id
-            jobs.push({
-                job_id: jobLocation.job_id,
-                distance: turf.distance(jobLocation.coords, provider.coords, options)
-            })
-            placeholder['details'] = [...jobs]
-        }
+        placeholder['provider_id'] = provider.provider_id
+        placeholder['distance_in_miles']= turf.distance(jobCoords, provider.coords, options)
         return placeholder
     })
 }
 
-const calculateTurnInTime = (jobs, providers) => {
 
+const calculateTurnInTime = (jobs, providers) => {
     const completedJobs = findCompletedJobs(jobs)
     const materialTurnInWaitTimes = completedJobs.map(({materials_turned_in_at, provider_id, datetime}) => {
         const formatted_materials_date = new Date(materials_turned_in_at);
