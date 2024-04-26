@@ -1,18 +1,20 @@
 import csvToJson from "convert-csv-to-json";
+import {ON_LOCATION_JOB_TYPE, REMOTE_JOB_TYPE} from "./jobs.js";
 
 const getProvidersJson = (providersCsvFile) => csvToJson.fieldDelimiter(',').getJsonFromCsv(providersCsvFile);
 
 const handleProviderDetails = (providers, distanceDetails, avgCostPerPage, ratings, turnInTimes) => {
     return providers.map((provider) => {
         const providerRatingDetails = {}
-        const dd = distanceDetails.find(({provider_id}) => provider_id === provider.id);
-        providerRatingDetails['distance_in_miles'] = dd.distance_in_miles
         providerRatingDetails['provider_id'] = provider.id;
-
+        if( distanceDetails.distance_in_miles !== 0) {
+            const dd = distanceDetails.find(({provider_id}) => provider_id === provider.id);
+            providerRatingDetails['distance_in_miles'] = dd.distance_in_miles
+        }
         const avgCostPP = avgCostPerPage.find(({provider_id}) => provider_id === provider.id)
         if (avgCostPP !== undefined || null) {
-            providerRatingDetails['averageRemoteJobCost'] = avgCostPP.averageRemoteJobCost
-            providerRatingDetails['averageOnLocationJobCost'] = avgCostPP.averageOnLocationJobCost
+            providerRatingDetails['avg_remote_cost_p_page'] = avgCostPP.avg_remote_cost_p_page
+            providerRatingDetails['avg_location_cost_p_page'] = avgCostPP.avg_location_cost_p_page
         }
 
         const pRatings = ratings.find(({id}) => id === provider.id)
@@ -23,4 +25,17 @@ const handleProviderDetails = (providers, distanceDetails, avgCostPerPage, ratin
         return providerRatingDetails
     })
 }
-export {getProvidersJson, handleProviderDetails}
+
+const handleSortByJobLocation = (jobType, providers)=>{
+
+    if(jobType === REMOTE_JOB_TYPE){
+        providers.sort((a,b)=>  a.rating - b.rating || a.avg_remote_cost_p_page - b.avg_remote_cost_p_page|| a.avg_days_to_turn_in - b.avg_days_to_turn_in )
+    }
+        if (jobType === ON_LOCATION_JOB_TYPE) {
+            //TODO handle null ratings
+            providers.sort((a,b)=> a.rating - b.rating || a.distance_in_miles - b.distance_in_miles || a.avg_location_cost_p_page - b.avg_location_cost_p_page|| a.avg_days_to_turn_in - b.avg_days_to_turn_in )
+        }
+   return providers;
+
+}
+export {getProvidersJson, handleProviderDetails, handleSortByJobLocation}
