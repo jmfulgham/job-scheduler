@@ -23,19 +23,18 @@ const averageCost = jobsJson.map((job)=>{
 app.get('/api/v1/jobs',(req, res) =>{
     const {scheduled} = req.query
     let jobs;
-    scheduled ? jobs = findScheduledJobs(jobsJson): jobs = jobsJson
+    scheduled ? jobs = scheduledJobs : jobs = jobsJson
     res.send(jobs)
 })
 
 app.get('/api/v1/jobs/:id',(req, res) =>{
     const {id} = req.params;
-    const filteredJobById = scheduledJobs.find(job => job.id === id);
+    const filteredJobById = jobsJson.find(job => job.id === id);
     const providerDistanceDetails = findDistance(filteredJobById, providersJson)
     const providerDetails = handleProviderDetails(providersJson, providerDistanceDetails, averageCost, providerRatings, turnInTimes )
     const sortedProviderDetails = handleSortByJobLocation(filteredJobById.location_type, providerDetails)
     res.send({filteredJobById, potentialProviderDetails: sortedProviderDetails})
 })
-
 
 app.listen(port, ()=>{
     console.log("App is running")

@@ -29,11 +29,11 @@ const handleProviderDetails = (providers, distanceDetails, avgCostPerPage, ratin
 const handleSortByJobLocation = (jobType, providers)=>{
 
     if(jobType === REMOTE_JOB_TYPE){
-        providers.sort((a,b)=>  a.rating - b.rating || a.avg_remote_cost_p_page - b.avg_remote_cost_p_page|| a.avg_days_to_turn_in - b.avg_days_to_turn_in )
+        providers.sort((a,b)=>  a.rating - b.rating || a.avg_days_to_turn_in - b.avg_days_to_turn_in || a.avg_remote_cost_p_page - b.avg_remote_cost_p_page )
     }
         if (jobType === ON_LOCATION_JOB_TYPE) {
             //TODO handle null ratings
-            providers.sort((a,b)=> a.rating - b.rating || a.distance_in_miles - b.distance_in_miles || a.avg_location_cost_p_page - b.avg_location_cost_p_page|| a.avg_days_to_turn_in - b.avg_days_to_turn_in )
+            providers.sort((a,b)=> a.rating - b.rating || a.distance_in_miles - b.distance_in_miles || a.avg_days_to_turn_in - b.avg_days_to_turn_in || a.avg_location_cost_p_page - b.avg_location_cost_p_page )
         }
    return providers;
 

@@ -52,7 +52,7 @@ const calculateAveragePageCost = (jobs, providerId) => {
     return {avg_remote_cost_p_page, avg_location_cost_p_page, provider_id: providerId}
 }
 const findDistance = (scheduledJob, providers) => {
-    if(scheduledJob.location_type === REMOTE_JOB_TYPE) return {distance_in_miles: 0}
+    if(scheduledJob?.location_type === REMOTE_JOB_TYPE) return {distance_in_miles: 0}
     const jobCoords = scheduledJob.latitude && turf.point([scheduledJob.longitude, scheduledJob.latitude])
     const providerCoords = providers.map(provider => ({
         provider_id: provider.id,
@@ -67,7 +67,6 @@ const findDistance = (scheduledJob, providers) => {
         return placeholder
     })
 }
-
 
 const calculateTurnInTime = (jobs, providers) => {
     const completedJobs = findCompletedJobs(jobs)
