@@ -1,4 +1,4 @@
-import * as turf from '@turf/turf'
+import * as turf from "@turf/turf"
 import {findCompletedJobs, findPendingJobs, ON_LOCATION_JOB_TYPE, REMOTE_JOB_TYPE} from "./jobs.js";
 
 const getProviderRatings = (jobs, providers) => {
@@ -12,7 +12,7 @@ const getProviderRatings = (jobs, providers) => {
     for (const job of completedJobs) {
         providers.map(provider => {
             if (provider.id === job.provider_id) {
-                provider['jobs'] = [...provider.jobs, {jid: job.id, rating: job.provider_rating}]
+                provider["jobs"] = [...provider.jobs, {jid: job.id, rating: job.provider_rating}]
             }
         })
     }
@@ -20,7 +20,7 @@ const getProviderRatings = (jobs, providers) => {
     for (const provider of providers) {
         let numberOfJobs = provider.jobs.length
         let rating_sum = provider.jobs.reduce((rating, job) => {
-            if (job.rating === '' || null) {
+            if (job.rating === "" || null) {
                 numberOfJobs--
                 return 0
             }
@@ -28,13 +28,14 @@ const getProviderRatings = (jobs, providers) => {
         }, 0)
         if (rating_sum && numberOfJobs === 0) avg_rating = 0
         avg_rating = rating_sum / numberOfJobs
-        provider['avg_rating'] = avg_rating;
+        provider["avg_rating"] = avg_rating;
     }
     return providers
 }
 
 const calculateAveragePageCost = (jobs, providerId) => {
     const completedJobs = findCompletedJobs(jobs)
+
     const getJobsByLocationAndProviderId = (locationType, providerId) => completedJobs.filter(job => {
         if ((job.provider_id === providerId) && (job.location_type === locationType)) {
             return job
@@ -43,8 +44,9 @@ const calculateAveragePageCost = (jobs, providerId) => {
 
     const remoteJobs = getJobsByLocationAndProviderId(REMOTE_JOB_TYPE, providerId)
     const onLocationJobs = getJobsByLocationAndProviderId(ON_LOCATION_JOB_TYPE, providerId)
-    const averageCost = (jobs) => (jobs.reduce((prev, current) => {
-        if (current['avg_cost_per_page']) return prev + Number(current['avg_cost_per_page'])
+    const averageCost = (jobs) => (jobs.reduce((tally, current) => {
+        if (current["avg_cost_per_page"]) return tally + Number(current["avg_cost_per_page"])
+        return tally
     }, 0) / jobs.length)
 
     const avg_remote_cost_p_page = averageCost(remoteJobs);
@@ -53,17 +55,17 @@ const calculateAveragePageCost = (jobs, providerId) => {
 }
 const findDistance = (scheduledJob, providers) => {
     if(scheduledJob?.location_type === REMOTE_JOB_TYPE) return {distance_in_miles: 0}
-    const jobCoords = scheduledJob.latitude && turf.point([scheduledJob.longitude, scheduledJob.latitude])
+    const jobCoords = scheduledJob?.latitude && turf.point([scheduledJob.longitude, scheduledJob.latitude])
     const providerCoords = providers.map(provider => ({
         provider_id: provider.id,
         coords: turf.point([provider.longitude, provider.latitude])
     }))
 
-    const options = {units: 'miles'}
+    const options = {units: "miles"}
     return providerCoords.map((provider) => {
         const placeholder = {}
-        placeholder['provider_id'] = provider.provider_id
-        placeholder['distance_in_miles']= turf.distance(jobCoords, provider.coords, options)
+        placeholder["provider_id"] = provider.provider_id
+        placeholder["distance_in_miles"]= Math.round(turf.distance(jobCoords, provider.coords, options))
         return placeholder
     })
 }
@@ -89,7 +91,8 @@ const calculateTurnInTime = (jobs, providers) => {
         const sumOfWaitTimesById = materialTurnInWaitTimes.filter(({provider_id}) => provider_id === provider.id)
         const awaitingMaterialsByProvider = outstandingMaterials.filter(({provider_id}) => provider_id === provider.id).length
         const totalDays = Math.round(sumOfWaitTimesById.reduce((tally, curr) => {
-            if (curr['provider_id']) return tally + curr['avg_days_to_turn_in']
+            if (curr["provider_id"]) return tally + curr["avg_days_to_turn_in"]
+            return tally
         }, 0) / sumOfWaitTimesById.length) + awaitingMaterialsByProvider
         return {provider_id: provider.id, avg_days_to_turn_in: totalDays ? totalDays : null}
     })

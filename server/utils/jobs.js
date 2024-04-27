@@ -1,7 +1,7 @@
-import csvToJson from 'convert-csv-to-json';
+import csvToJson from "convert-csv-to-json";
 const REMOTE_JOB_TYPE = "REMOTE"
 const ON_LOCATION_JOB_TYPE = "LOCATION_BASED"
-const getJobsJson = (jobsCsvFile) => csvToJson.fieldDelimiter(',').getJsonFromCsv(jobsCsvFile)
+const getJobsJson = (jobsCsvFile) => csvToJson.fieldDelimiter(",").getJsonFromCsv(jobsCsvFile)
 const findScheduledJobs = (listOfJobs) => {
     return listOfJobs.filter(job => job.status === "SCHEDULED")
 }
