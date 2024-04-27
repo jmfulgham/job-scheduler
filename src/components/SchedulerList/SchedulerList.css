@@ -1,7 +1,21 @@
-.scheduler-list-container {
-
-}
-
 h2 {
     color: black;
+}
+.scheduled-job :hover {
+    color: #1f31f1;
+    border-color: #1f31f1;
+}
+
+.schedule-parent {
+    display: flex;
+    flex-direction: row;
+    margin: 10px;
+}
+
+.scheduler-list-container {
+    width: 50%;
+}
+
+.provider-results-comp {
+    width: 50%;
 }
