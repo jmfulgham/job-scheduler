@@ -1,0 +1,8 @@
+.provider-results-container {
+    margin: 10px;
+}
+
+.provider-name {
+    font-weight: bolder !important;
+    color: grey;
+}

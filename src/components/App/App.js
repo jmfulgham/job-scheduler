@@ -14,6 +14,8 @@ function App() {
                 </div>
                 <div className={'provider-results-comp'}>
                     <ProviderResults/>
+                    <ProviderResults/>
+                    <ProviderResults/>
                 </div>
             </section>
         </div>
