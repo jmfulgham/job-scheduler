@@ -2,14 +2,15 @@ import express from 'express';
 import {calculateAveragePageCost, findDistance, getProviderRatings, calculateTurnInTime} from "./utils/calculations.js";
 import {getProvidersJson, handleProviderDetails, handleSortByJobLocation} from './utils/providers.js';
 import {getJobsJson, findScheduledJobs} from "./utils/jobs.js";
-import path from 'path';
-import { fileURLToPath } from 'url'
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
+import dotenv from "dotenv";
+import cors from "cors";
+dotenv.config();
 const app = express()
-const port = 8080;
+const port = process.env.PORT
+console.log(port)
+
+app.use(cors())
 
 const jobs = './resources/jobs.csv'
 const jobsJson = getJobsJson(jobs)
@@ -25,10 +26,6 @@ const averageCost = jobsJson.map((job)=>{
     if(job.provider_id) return calculateAveragePageCost(jobsJson, job.provider_id)
 }).filter(avg => avg  !== undefined)
 
-app.use(express.static(path.resolve(__dirname, '../build')));
-app.get('/', (req, res)=>{
-    res.sendFile(path.resolve(__dirname, '../build', 'index.html'));
-})
 
 app.get('/api/v1/jobs',(req, res) =>{
     const {scheduled} = req.query
