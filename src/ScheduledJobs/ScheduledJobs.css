@@ -1,0 +1,10 @@
+.schedule-jobs-container {
+    margin: 10px 0 10px 0;
+    height: 160px;
+    border: 1px solid black;
+    border-radius: 10px;
+}
+
+.sj-contents{
+    padding: 10px;
+}
