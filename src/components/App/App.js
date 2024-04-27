@@ -1,7 +1,7 @@
 import './App.css';
 import Typography from '@mui/material/Typography';
-import SchedulerList from "./SchedulerList/SchedulerList";
-import ProviderResults from "./ProviderResults/ProviderResults";
+import SchedulerList from "../SchedulerList/SchedulerList";
+import ProviderResults from "../ProviderResults/ProviderResults";
 
 function App() {
     return (
