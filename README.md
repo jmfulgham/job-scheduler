@@ -12,7 +12,7 @@ Run `npm run setup` in the root directory to install all dependencies in both th
 to start the application.
 
 ### Technical Overview
-In order to move as fast as possible, I decided to use Javascript instead of Typescript. I used Express.js to help build the API, and I used MaterialUI 
+In order to move as fast as possible, I decided to use Javascript instead of Typescript. I used Express.js to help build the API, and I used React/MaterialUI 
 components for easy styling. 
 
 I stored the csv files in the `/resources` directory, just for better organization. All the calculating and data parsing methods are stored in
