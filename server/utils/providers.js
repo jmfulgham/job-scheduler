@@ -13,13 +13,13 @@ const handleProviderDetails = (providers, distanceDetails, avgCostPerPage, ratin
             providerRatingDetails["distance_in_miles"] = dd.distance_in_miles
         }
         const avgCostPP = avgCostPerPage.find(({provider_id}) => provider_id === provider.id)
-        if (avgCostPP !== undefined || null) {
+        if (avgCostPP !== undefined) {
             providerRatingDetails["avg_remote_cost_p_page"] = avgCostPP.avg_remote_cost_p_page
             providerRatingDetails["avg_location_cost_p_page"] = avgCostPP.avg_location_cost_p_page
         }
 
         const pRatings = ratings.find(({id}) => id === provider.id)
-        providerRatingDetails["avg_rating"] = pRatings.avg_rating
+        providerRatingDetails["avg_rating"] = !isNaN(pRatings.avg_rating)? pRatings.avg_rating : null
 
         const avgTurnInTime = turnInTimes.find(({provider_id}) => provider_id === provider.id)
         providerRatingDetails["avg_days_to_turn_in"] = avgTurnInTime.avg_days_to_turn_in
@@ -30,11 +30,10 @@ const handleProviderDetails = (providers, distanceDetails, avgCostPerPage, ratin
 const handleSortByJobLocation = (jobType, providers)=>{
 
     if(jobType === REMOTE_JOB_TYPE){
-        providers.sort((a,b)=>   a.avg_days_to_turn_in - b.avg_days_to_turn_in ||a.avg_remote_cost_p_page ? a.avg_remote_cost_p_page - b.avg_remote_cost_p_page : a.rating - b.rating  )
+        providers.sort((a,b)=>  a.avg_days_to_turn_in - b.avg_days_to_turn_in || a.avg_remote_cost_p_page - b.avg_remote_cost_p_page || a.rating - b.rating  )
     }
         if (jobType === ON_LOCATION_JOB_TYPE) {
-            //TODO handle null ratings
-            providers.sort((a,b)=> a.distance_in_miles - b.distance_in_miles || b.avg_days_to_turn_in - a.avg_days_to_turn_in || a.avg_location_cost_p_page ? a.avg_location_cost_p_page - b.avg_location_cost_p_page : a.rating - b.rating )
+            providers.sort((a,b)=> a.distance_in_miles - b.distance_in_miles || b.avg_days_to_turn_in - a.avg_days_to_turn_in ||  a.avg_location_cost_p_page - b.avg_location_cost_p_page || a.rating - b.rating )
         }
    return providers;
 

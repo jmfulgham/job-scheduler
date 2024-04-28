@@ -49,8 +49,8 @@ const calculateAveragePageCost = (jobs, providerId) => {
         return tally
     }, 0) / jobs.length)
 
-    const avg_remote_cost_p_page = averageCost(remoteJobs);
-    const avg_location_cost_p_page = averageCost(onLocationJobs)
+    const avg_remote_cost_p_page = isNaN(averageCost(remoteJobs)) ? null : averageCost(remoteJobs);
+    const avg_location_cost_p_page = isNaN(averageCost(onLocationJobs)) ? null : averageCost(onLocationJobs);
     return {avg_remote_cost_p_page, avg_location_cost_p_page, provider_id: providerId}
 }
 const findDistance = (scheduledJob, providers) => {
