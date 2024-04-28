@@ -11,6 +11,8 @@ A basic web application that lists all upcoming jobs that still need a provider 
 Run `npm run setup` in the root directory to install all dependencies in both the server and client, then run `npm run dev`
 to start the application.
 
+If `nvm` is installed on your local machine, you can run `nvm use` to make sure you're on the same version of Node.
+
 ### Technical Overview
 In order to move as fast as possible, I decided to use Javascript instead of Typescript. I used Express.js to help build the API, and I used React/MaterialUI 
 components for easy styling. 
