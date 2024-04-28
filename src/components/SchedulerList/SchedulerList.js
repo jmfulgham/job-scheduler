@@ -9,6 +9,7 @@ const SchedulerList = () => {
     const [providerDetails, setProviderDetails] = useState([])
     const [locationType, setLocationType] = useState("")
     const [jobId, setJobId] = useState("")
+    const [error, setError] = useState(false);
 
     useEffect(() => {
         (async () => {
@@ -17,18 +18,26 @@ const SchedulerList = () => {
                 const body = await res.json()
                 setScheduledJobs(body)
             } catch (e) {
+                setError(true)
                 console.error("Error fetching jobs ", e)
             }
         })()
     }, [])
 
+
+    if(error) return(<div><Typography variant={'h4'}>Error, please try your request again</Typography></div>)
     const handleProviders = async (jobId) => {
         setJobId(jobId);
-        const providerDetails = await fetch(`http://localhost:8080${process.env.REACT_APP_JOBS_API_ENDPOINT}/${jobId}`)
-        const {potentialProviderDetails, filteredJobById} = await providerDetails.json()
-        const {location_type} = filteredJobById
-        setLocationType(location_type)
-        setProviderDetails(potentialProviderDetails)
+        try {
+            const providerDetails = await fetch(`http://localhost:8080${process.env.REACT_APP_JOBS_API_ENDPOINT}/${jobId}`)
+            const {potentialProviderDetails, filteredJobById} = await providerDetails.json()
+            const {location_type} = filteredJobById
+            setLocationType(location_type)
+            setProviderDetails(potentialProviderDetails)
+        } catch(e){
+            setError(true)
+            console.error(e)
+        }
     }
 
     return (<div className={"schedule-parent"}>
