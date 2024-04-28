@@ -33,7 +33,7 @@ const handleSortByJobLocation = (jobType, providers)=>{
         providers.sort((a,b)=>  a.avg_days_to_turn_in - b.avg_days_to_turn_in || a.avg_remote_cost_p_page - b.avg_remote_cost_p_page || a.rating - b.rating  )
     }
         if (jobType === ON_LOCATION_JOB_TYPE) {
-            providers.sort((a,b)=> a.distance_in_miles - b.distance_in_miles || b.avg_days_to_turn_in - a.avg_days_to_turn_in ||  a.avg_location_cost_p_page - b.avg_location_cost_p_page || a.rating - b.rating )
+            providers.sort((a,b)=> a.distance_in_miles - b.distance_in_miles || a.avg_days_to_turn_in - b.avg_days_to_turn_in ||  a.avg_location_cost_p_page - b.avg_location_cost_p_page || a.rating - b.rating )
         }
    return providers;
 
