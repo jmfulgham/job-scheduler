@@ -1,18 +1,19 @@
-import React from "react";
+import React, {memo} from "react";
 import "./ScheduledJobs.css";
 import Typography from "@mui/material/Typography";
 
-const ScheduledJobs = ({
-                           id,
-                           datetime,
-                           location_type,
-                           latitude,
-                           longitude,
-                       }) => {
+const ScheduledJobs = memo(({
+                                selected,
+                                id,
+                                datetime,
+                                location_type,
+                                latitude,
+                                longitude,
+                            }) => {
     const location = location_type === "LOCATION_BASED" ? "On Location" : "Remote";
     const formattedDate = new Date(datetime).toDateString()
 
-    return (<div className={"schedule-jobs-container"}>
+    return (<div className={"schedule-jobs-container"} id={selected ? "selected" : null}>
         <>
             <Typography variant={"h4"}>Job Id: {id}</Typography>
             <Typography variant={"body1"}>Job Type: {location}</Typography>
@@ -22,6 +23,6 @@ const ScheduledJobs = ({
             <Typography variant={"body1"}>Date Scheduled: {formattedDate}</Typography>
         </>
     </div>)
-}
+})
 
 export default ScheduledJobs;
