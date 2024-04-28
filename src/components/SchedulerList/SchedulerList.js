@@ -26,6 +26,7 @@ const SchedulerList = () => {
 
 
     if(error) return(<div><Typography variant={'h4'}>Error, please try your request again</Typography></div>)
+
     const handleProviders = async (jobId) => {
         setJobId(jobId);
         try {
