@@ -10,16 +10,16 @@ const ScheduledJobs = ({
                            longitude,
                        }) => {
     const location = location_type === "LOCATION_BASED" ? "On Location" : "Remote";
-
+    const formattedDate = new Date(datetime).toDateString()
 
     return (<div className={"schedule-jobs-container"}>
         <>
             <Typography variant={"h4"}>Job Id: {id}</Typography>
             <Typography variant={"body1"}>Job Type: {location}</Typography>
-            {location_type !== "REMOTE" && latitude && <Typography variant={"body1"}>Latitude: {latitude}</Typography>}
-            {location_type !== "REMOTE" && longitude &&
+            {location === "On Location" && latitude && <Typography variant={"body1"}>Latitude: {latitude}</Typography>}
+            {location === "On Location" && longitude &&
                 <Typography variant={"body1"}>Longitude: {longitude}</Typography>}
-            <Typography variant={"body1"}>Date Scheduled: {datetime}</Typography>
+            <Typography variant={"body1"}>Date Scheduled: {formattedDate}</Typography>
         </>
     </div>)
 }
