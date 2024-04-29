@@ -1,0 +1,9 @@
+.provider-results-container {
+    margin: 20px;
+    width: 500px;
+    min-height: 150px;
+}
+
+.provider-name {
+    font-weight: bolder !important;
+}

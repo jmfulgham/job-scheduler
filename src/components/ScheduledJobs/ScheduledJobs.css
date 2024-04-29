@@ -1,0 +1,13 @@
+.schedule-jobs-container {
+    margin: 10px 0 10px 0;
+    height: 160px;
+    border: 1px solid black;
+    border-radius: 10px;
+    padding: 20px 10px 0 20px;
+    width: 500px;
+}
+
+#selected {
+    color: #1f31f1;
+    border-color: #1f31f1;
+}

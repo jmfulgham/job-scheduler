@@ -1,0 +1,18 @@
+h2 {
+    color: black;
+}
+.scheduled-job :hover {
+    color: #1f31f1;
+    border-color: #1f31f1;
+}
+
+.schedule-parent {
+    display: flex;
+    flex-direction: row;
+    margin: 10px;
+    justify-content: center;
+}
+
+.scheduler-list-container {
+    margin: 20px;
+}
